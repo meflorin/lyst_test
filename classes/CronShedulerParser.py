@@ -22,7 +22,7 @@ class CronShedulerParser:
     def getMessages(self):
         return self.__messages
     
-    def __getcronTimeParts(self):
+    def __getCronTimeParts(self):
         
         if type(self.cronTime) != type(None):
             cronTimeParts = self.cronTime.split(':')
@@ -37,7 +37,7 @@ class CronShedulerParser:
     def parseCronJob(self, cronLine):
         
         cronLine = cronLine.strip()
-        cronTimeParts = self.__getcronTimeParts()
+        cronTimeParts = self.__getCronTimeParts()
         if (len(cronTimeParts) > 2):
             if(len(cronLine) > 0):
                 
