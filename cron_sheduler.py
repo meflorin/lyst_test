@@ -23,7 +23,7 @@ def main():
     cronParser.processCronJobs()
     messages = cronParser.getMessages()
      
-    for i in range(len(cronjobs)-1):
+    for i in range(len(cronjobs)):
         print(cronjobs[i] + messages[i])
     
     
