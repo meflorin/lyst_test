@@ -1,0 +1,17 @@
+Write a command line program that given as imput a simplified version of a crontab file, and the current time,
+prints to the console for each script the next time it will run, also specifying whether it will run today or tomorrow.
+
+* 30 13 * * /bin/run_me_daily
+10 * 13 * * /bin/run_me_hourly
+10 * 13 * * /bin/run_me_every_minute
+10 * 13 * * /bin/run_me_sixty_times
+
+example usage:
+> python cron_schedule.py HH:MM < scheduler.conf
+
+example output:
+> python cron_schedule.py 18:50 < scheduler.conf
+/bin/run_me_daily 13:30 tommorow
+/bin/run_me_hourly 19:45 today
+/bin/run_me_every_minute 18:50 today
+/bin/run_me_sixty_times 19:00 today
