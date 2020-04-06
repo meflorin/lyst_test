@@ -4,10 +4,9 @@ import sys
 import fileinput
 from classes.CronShedulerParser import CronShedulerParser
 
-cronjobs = []
-
 def main():
         
+    cronjobs = []
     nbArgv = len(sys.argv)
     cronTime = None
     
