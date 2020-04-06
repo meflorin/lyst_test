@@ -32,14 +32,17 @@ class CronShedulerParser:
                 int(cronTimeParts[0]) * 60 + int(cronTimeParts[1])
                 ]
         else:
-            return[]
+            return []
         
     def parseCronJob(self, cronLine):
         
         cronLine = cronLine.strip()
-        cronTimeParts = self.__getCronTimeParts()
-        if (len(cronTimeParts) > 2):
-            if(len(cronLine) > 0):
+        
+        if(len(cronLine) > 0):
+            
+            cronTimeParts = self.__getCronTimeParts()
+            
+            if (len(cronTimeParts) > 2):
                 
                 if cronLine.find(self.__delimiter) > -1:
                     
@@ -86,8 +89,3 @@ class CronShedulerParser:
             return hour + ':' + minute + ' tomorrow'
         else:
             return  hour + ':' + minute + ' today'
-               
-                        
-                        
-                        
-    
