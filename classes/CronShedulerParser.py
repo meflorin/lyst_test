@@ -16,8 +16,8 @@ class CronShedulerParser:
         
         if (len(self.cronjobs)> 0):
             for current in self.cronjobs:
-                currentLineMessage = self.parseCronJob(current)
-                self.__messages.append(currentLineMessage)                
+                currentLineMessage = self.__parseCronJob(current)
+                self.__messages.append(currentLineMessage)
     
     def getMessages(self):
         return self.__messages
@@ -34,7 +34,7 @@ class CronShedulerParser:
         else:
             return []
         
-    def parseCronJob(self, cronLine):
+    def __parseCronJob(self, cronLine):
         
         cronLine = cronLine.strip()
         
@@ -56,7 +56,7 @@ class CronShedulerParser:
                             
                             cronTimeCalendarInfo = cronTimeCalendar.split(' ')
                             
-                            message = self.getCronJobMessage(
+                            message = self.__getCronJobMessage(
                                 cronTimeCalendarInfo[2],
                                 cronTimeCalendarInfo[1],
                                 cronTimeParts
@@ -69,7 +69,7 @@ class CronShedulerParser:
         else:
             return ''
                         
-    def getCronJobMessage(self, hour, minute, cronTimeParts):
+    def __getCronJobMessage(self, hour, minute, cronTimeParts):
         
         if (minute == '*' and hour != '*'):
             return "every minute every hour from now"
@@ -80,7 +80,7 @@ class CronShedulerParser:
             if (int(hour) < cronTimeParts[1]):
                 return "every minute starting from " + hour + "hour tomorrow "
 
-        if (minute != '*' and hour == '*'):            
+        if (minute != '*' and hour == '*'):
             return "every hour starting from " + minute + "minute  today "
             
         seconds = int(hour) * 60 + int(minute)
