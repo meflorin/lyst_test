@@ -2,12 +2,16 @@ class CronShedulerParser:
     
     cronjobs = []
     cronTime = None
+    __whichDay = { True: 'today', False: 'tomorrow' }
+    __cronTimeHour = None
+    __cronTimeMinute = None
     __delimiter = ''
     __messages = []
     
     def __init__(self, cronjobs = [], cronTime = None):
         self.cronjobs = cronjobs
         self.cronTime = cronTime
+        self.__cronTimeHour, self.__cronTimeMinute = self.__getCronTimeParts()
 
     def setDelimiter(self, delimiter):
         self.__delimiter = delimiter
@@ -16,76 +20,138 @@ class CronShedulerParser:
         
         if (len(self.cronjobs)> 0):
             for current in self.cronjobs:
-                currentLineMessage = self.__parseCronJob(current)
-                self.__messages.append(currentLineMessage)
+                nextCronTime = self.__parseCronJob(current)
+                nextCronTimeMessage = self.__getCronJobMessage(nextCronTime)
     
     def getMessages(self):
         return self.__messages
     
+    def __validateInputs(self, hour, minute):
+        
+        if isinstance(hour, int):
+            if (hour < 0 and hour > 23): 
+                return False
+        
+        if isinstance(minute, int):
+            if (minute < 0 and minute > 59): 
+                return False
+            
+        if (isinstance(minute, str) and minute != '*'):
+            return False
+        
+        if (isinstance(hour, str) and hour != '*'):
+            return False
+        
     def __getCronTimeParts(self):
         
         if type(self.cronTime) != type(None):
             cronTimeParts = self.cronTime.split(':')
             return [
-                int(cronTimeParts[0]), 
-                int(cronTimeParts[1]), 
-                int(cronTimeParts[0]) * 60 + int(cronTimeParts[1])
+                int(cronTimeParts[0]),
+                int(cronTimeParts[1])
                 ]
         else:
-            return []
+            return [None, None]
         
     def __parseCronJob(self, cronLine):
         
         cronLine = cronLine.strip()
         
         if(len(cronLine) > 0):
-            
-            cronTimeParts = self.__getCronTimeParts()
-            
-            if (len(cronTimeParts) > 2):
+                                        
+            if cronLine.find(self.__delimiter) > -1:
                 
-                if cronLine.find(self.__delimiter) > -1:
+                info = cronLine.split(self.__delimiter)
+                
+                if (len(info) > 0):
                     
-                    info = cronLine.split(self.__delimiter)
+                    cronTimeCalendar = info[0].strip()
                     
-                    if (len(info) > 0):
+                    if (len(cronTimeCalendar) > 0):
                         
-                        cronTimeCalendar = info[0].strip()
+                        cronTimeCalendarInfo = cronTimeCalendar.split(' ')
                         
-                        if (len(cronTimeCalendar) > 0):
-                            
-                            cronTimeCalendarInfo = cronTimeCalendar.split(' ')
-                            
-                            message = self.__getCronJobMessage(
-                                cronTimeCalendarInfo[2],
-                                cronTimeCalendarInfo[1],
-                                cronTimeParts
+                        nextCronTime = self.__getCronNextTime(
+                            hour = int(cronTimeCalendarInfo[1]) if cronTimeCalendarInfo[1].isnumeric() else cronTimeCalendarInfo[1],
+                            minute =  int(cronTimeCalendarInfo[0]) if cronTimeCalendarInfo[0].isnumeric() else cronTimeCalendarInfo[0],                            
                             )
-                                                    
-                            return message
+               
+                        return nextCronTime
                             
-            else:
-                return ''
         else:
-            return ''
+            return []
                         
-    def __getCronJobMessage(self, hour, minute, cronTimeParts):
+    def __getCronNextTime(self, hour = '*', minute = '*'):
         
-        if (minute == '*' and hour != '*'):
-            return "every minute every hour from now"
+        if self.__validateInputs(hour, minute) is False:
+            return []
         
-        if (minute == '*' and hour != '*'):
-            if (int(hour) >= cronTimeParts[1]):
-                return "every minute starting from " + hour + " hour today "
-            if (int(hour) < cronTimeParts[1]):
-                return "every minute starting from " + hour + "hour tomorrow "
+        # * *
+        if (hour == '*' and minute == '*'):
+            return [self.__cronTimeHour, self.__cronTimeMinute, True]
 
-        if (minute != '*' and hour == '*'):
-            return "every hour starting from " + minute + "minute  today "
+        # 45 *
+        if (hour == '*' and minute != '*'):
             
-        seconds = int(hour) * 60 + int(minute)
-
-        if (seconds < cronTimeParts[2]):
-            return hour + ':' + minute + ' tomorrow'
+            if (int(minute) > self.__cronTimeMinute):
+                return([self.__cronTimeHour, minute, True])
+            
+            if (int(minute) <= self.__cronTimeMinute):
+                #check if not passed midnight
+                if(self.__cronTimeHour + 1 >= 24):
+                    return [0, minute, False]
+                else:
+                    return [self.__cronTimeHour + 1, minute, True]
+                
+        # * 19 at every minute past 19 hour
+        if (hour != '*' and minute == '*'):
+            
+            #if hour passed, next day
+            if (hour < self.__cronTimeHour):
+                return [hour, 0, False]
+            
+            if (hour > self.__cronTimeHour):
+                return [hour, 0, True]
+            
+            if (hour == self.__cronTimeHour):
+                if (self.__cronTimeMinute == 59):
+                    if (hour == 23):
+                        return [hour, 0, False]
+                    else:                        
+                        return [hour + 1, 0, True]
+                else:                        
+                    return [hour,self.__cronTimeMinute + 1, True]
+                
+        # 12 13
+        if (hour != '*' and minute != '*'):
+            
+            if (hour == self.__cronTimeHour):
+                if (minute <= self.__cronTimeMinute):
+                    return [hour, minute, False]
+                else:
+                    return [hour, minute, True]
+                
+            if (hour < self.__cronTimeHour):
+                return [hour, minute, False]
+            
+            if (hour > self.__cronTimeHour):
+                return [hour, minute, True]
+         
+        return []
+        
+    def __getCronJobMessage(self, cronMessageParts = [], appendToMessages = True):
+        
+        if (len(cronMessageParts) == 0 or len(cronMessageParts) < 3):
+            message = ' N/A'
+        
         else:
-            return  hour + ':' + minute + ' today'
+            message = str(cronMessageParts[0]) + ':' + str(cronMessageParts[1]) + ' ' + self.__whichDay[cronMessageParts[2]]
+
+        if appendToMessages : self.__messages.append(message)
+        
+        return message
+        
+        
+        
+        
+              
