@@ -16,6 +16,9 @@ class CronShedulerParser:
     def setDelimiter(self, delimiter):
         self.__delimiter = delimiter
         
+    def getDelimiter(self):
+        return self.__delimiter
+        
     def processCronJobs(self):
         
         if (len(self.cronjobs)> 0):
@@ -104,7 +107,7 @@ class CronShedulerParser:
                 else:
                     return [self.__cronTimeHour + 1, minute, True]
                 
-        # * 19 at every minute past 19 hour
+        # * 19
         if (hour != '*' and minute == '*'):
             
             #if hour passed, next day
