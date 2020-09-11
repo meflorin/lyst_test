@@ -1,13 +1,12 @@
 #!/usr/bin/env python
 
 import sys
-import fileinput
 from classes.CronShedulerParser import CronShedulerParser
 
 def main():
 
     if (len(sys.argv) > 1 and sys.stdin.isatty() == False):
-        
+                
         cronjobs = []
         cronTime = sys.argv[1]
         
@@ -17,13 +16,13 @@ def main():
             line = sys.stdin.readline()
         
         cronParser = CronShedulerParser(cronjobs, cronTime)
-        cronParser.setDelimiter('/bin')
         cronParser.processCronJobs()
         messages = cronParser.getMessages()
         
         for i in range(len(cronjobs)):
-            print(messages[i] + " - " + cronParser.getDelimiter() + cronjobs[i].split(cronParser.getDelimiter())[1])
+            print(messages[i] + " - " + cronParser.getDelimiter() + cronjobs[i].split(cronParser.getDelimiter())[2])
     else:
         print('Not enough or wrong arguments!')
-    
-main()
+
+if __name__ == "__main__":
+    main()
