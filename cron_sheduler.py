@@ -22,7 +22,7 @@ def main():
         
         for i in range(len(cronjobs)):
             print("-----")
-            print(cronjobs[i] + messages[i])
+            print(cronjobs[i] + " " + messages[i])
             print("-----")
               
     else:

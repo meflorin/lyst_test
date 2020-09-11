@@ -146,8 +146,14 @@ class CronShedulerParser:
             message = ' N/A'
         
         else:
-            message = str(cronMessageParts[0]) + ':' + str(cronMessageParts[1]) + ' ' + self.__whichDay[cronMessageParts[2]]
+            message = self.__formatTwoDigits(cronMessageParts[0]) + ':' + self.__formatTwoDigits(cronMessageParts[1]) + ' ' + self.__whichDay[cronMessageParts[2]]
 
         if appendToMessages : self.__messages.append(message)
         
         return message
+    
+    def __formatTwoDigits(self, message):
+        
+        if (message < 10) : return '0' + str(message)
+        
+        return str(message)
