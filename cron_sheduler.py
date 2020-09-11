@@ -5,15 +5,16 @@ import fileinput
 from classes.CronShedulerParser import CronShedulerParser
 
 def main():
+
+    if (len(sys.argv) > 1 and sys.stdin.isatty() == False):
         
-    cronjobs = []
-    nbArgv = len(sys.argv)
-    cronTime = None
-    
-    if (nbArgv > 1):
+        cronjobs = []
         cronTime = sys.argv[1]
-        for line in fileinput.input(sys.argv[2:]):
-            cronjobs.append(line)
+        
+        line = sys.stdin.readline()
+        while line:
+            cronjobs.append(line.strip())
+            line = sys.stdin.readline()
         
         cronParser = CronShedulerParser(cronjobs, cronTime)
         cronParser.setDelimiter('/bin')
@@ -23,6 +24,6 @@ def main():
         for i in range(len(cronjobs)):
             print(messages[i] + " - " + cronParser.getDelimiter() + cronjobs[i].split(cronParser.getDelimiter())[1])
     else:
-        print('not enough arguments')
+        print('Not enough or wrong arguments!')
     
 main()
