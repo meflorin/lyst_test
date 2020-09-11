@@ -42,6 +42,8 @@ class CronShedulerParser:
         if (isinstance(hour, str) and hour != '*'):
             return False
         
+        return True
+        
     def __getCronTimeParts(self):
         
         if type(self.cronTime) != type(None):
@@ -70,10 +72,9 @@ class CronShedulerParser:
                     if (len(cronTimeCalendar) > 0):
                         
                         cronTimeCalendarInfo = cronTimeCalendar.split(' ')
-                        
                         nextCronTime = self.__getCronNextTime(
-                            hour = int(cronTimeCalendarInfo[1]) if cronTimeCalendarInfo[1].isnumeric() else cronTimeCalendarInfo[1],
-                            minute =  int(cronTimeCalendarInfo[0]) if cronTimeCalendarInfo[0].isnumeric() else cronTimeCalendarInfo[0],                            
+                            hour = int(cronTimeCalendarInfo[1]) if cronTimeCalendarInfo[1].isdigit() else cronTimeCalendarInfo[1],
+                            minute =  int(cronTimeCalendarInfo[0]) if cronTimeCalendarInfo[0].isdigit() else cronTimeCalendarInfo[0],                            
                             )
                
                         return nextCronTime
@@ -150,8 +151,3 @@ class CronShedulerParser:
         if appendToMessages : self.__messages.append(message)
         
         return message
-        
-        
-        
-        
-              

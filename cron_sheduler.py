@@ -21,7 +21,9 @@ def main():
         messages = cronParser.getMessages()
         
         for i in range(len(cronjobs)):
+            print("-----")
             print(cronjobs[i] + messages[i])
+            print("-----")
               
     else:
         print('not enough arguments')
